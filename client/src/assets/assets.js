@@ -58,13 +58,13 @@ export const plans = [
     },
     {
       id: 'Advanced',
-      price: 50,
+      price: 30,
       credits: 500,
       desc: 'Best for business use.'
     },
     {
       id: 'Business',
-      price: 250,
+      price: 150,
       credits: 5000,
       desc: 'Best for enterprise use.'
     },
