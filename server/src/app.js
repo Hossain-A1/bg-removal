@@ -28,8 +28,8 @@ app.use(xssClean());
 app.use(express.urlencoded({ extended: true }));
 
 // Test route
-app.get("/test", (req, res) => {
-  res.status(200).json({ message: "Test successful" });
+app.get("/", (req, res) => {
+  res.status(200).json({ message: "Test route successful" });
 });
 
 app.use("/api/user", userRouter);
