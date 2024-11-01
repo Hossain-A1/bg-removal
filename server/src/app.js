@@ -9,6 +9,8 @@ import { errorResponse } from "./controllers/responseController.js";
 import userRouter from "./userRoute.js";
 
 const app = express();
+// Trust proxies (required for rate limiting to work correctly on Vercel)
+app.set("trust proxy", 1);
 
 const reqLimit = rateLimit({
   windowMs: 1 * 60 * 1000,
