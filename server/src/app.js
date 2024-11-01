@@ -14,7 +14,7 @@ app.set("trust proxy", 1);
 
 const reqLimit = rateLimit({
   windowMs: 1 * 60 * 1000,
-  max: 30,
+  max: 300,
   message: "Too many requests from this API, please try again after 1 minute",
   keyGenerator: (req) => req.ip,
 });
