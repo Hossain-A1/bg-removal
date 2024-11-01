@@ -6,7 +6,7 @@ import cors from "cors";
 import morgan from "morgan";
 import createHttpError from "http-errors";
 import { errorResponse } from "./controllers/responseController.js";
-import userRouter from "./userRoute.js";
+import userRouter from "./routes/userRoute.js";
 
 const app = express();
 // Trust proxies (required for rate limiting to work correctly on Vercel)
