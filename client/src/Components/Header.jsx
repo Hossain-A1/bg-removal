@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useContext } from "react";
 import { assets } from "../assets/assets";
+import { AppContext } from "../Context/AppContext";
 
 const Header = () => {
+  const { removeBG } = useContext(AppContext);
   return (
     <header className='flex items-center justify-between max-sm:flex-col-reverse gap-y-10 mx-4 mt-10 lg:px-44 sm:mt-20'>
       {/* ------left side ------- */}
@@ -17,11 +19,18 @@ const Header = () => {
         </h1>
         <p className='my-6 text-[15px] text-gray-500'>
           "Effortlessly remove image backgrounds with cutting-edge AI
-          technology. Achieve flawless, transparent results in just seconds!<br className='max-sm:hidden' /> transparent results in just seconds!"
+          technology. Achieve flawless, transparent results in just seconds!
+          <br className='max-sm:hidden' /> transparent results in just seconds!"
         </p>
 
         <div>
-          <input type='file' id='image1' hidden />
+          <input
+            onChange={(e) => removeBG(e.target.files[0])}
+            accept="image/*"
+            type='file'
+            id='image1'
+            hidden
+          />
           <label
             htmlFor='image1'
             className='inline-flex gap-3 px-8 py-3.5 rounded-full cursor-pointer bg-gradient-to-r from-violet-600 to-fuchsia-500 m-auto hover:scale-105 transition-all duration-700'
