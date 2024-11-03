@@ -7,6 +7,7 @@ import morgan from "morgan";
 import createHttpError from "http-errors";
 import { errorResponse } from "./controllers/responseController.js";
 import userRouter from "./routes/userRoute.js";
+import imageRouter from "./routes/imageRoute.js";
 
 const app = express();
 // Trust proxies (required for rate limiting to work correctly on Vercel)
@@ -33,6 +34,7 @@ app.get("/", (req, res) => {
 });
 
 app.use("/api/user", userRouter);
+app.use("/api/image", imageRouter);
 
 // Auth routes (make sure this comes before the 404 handler)
 
