@@ -28,7 +28,7 @@ const clerkWebhooks = async (req, res, next) => {
         };
 
         await userModel.create(userData);
-        return successResponse(res, { message: "User created successfully" });
+        return successResponse(res, {statusCode:201, message: "User created successfully" });
       }
 
       case "user.updated": {
@@ -40,12 +40,12 @@ const clerkWebhooks = async (req, res, next) => {
         };
 
         await userModel.findOneAndUpdate({ clerkId: data.id }, userData);
-        return successResponse(res, { message: "User updated successfully" });
+        return successResponse(res, {statusCode:200, message: "User updated successfully" });
       }
 
       case "user.deleted": {
         await userModel.findOneAndDelete({ clerkId: data.id });
-        return successResponse(res, { message: "User deleted successfully" });
+        return successResponse(res, {statusCode:200, message: "User deleted successfully" });
       }
 
       default:
