@@ -1,16 +1,30 @@
 import mongoose from "mongoose";
 import { mongoAtlasURL } from "../secret.js";
 
-
 const connectDB = async (options = {}) => {
   try {
-    mongoose.connect(mongoAtlasURL, options);
-    console.log("Connectinos DB successfully");
-    mongoose.connection.on("Error", (error) => {
-      console.log(`Connection DB error :${error}`);
+    await mongoose.connect(mongoAtlasURL, {
+      ...options,
+      connectTimeoutMS: 20000, // 20 seconds
+      socketTimeoutMS: 45000, // 45 seconds
+    });
+
+    console.log("Connected to DB successfully");
+
+    // Listening for mongoose connection events
+    mongoose.connection.on("connected", () => {
+      console.log("Mongoose connected to DB");
+    });
+
+    mongoose.connection.on("error", (error) => {
+      console.error(`Connection error: ${error}`);
+    });
+
+    mongoose.connection.on("disconnected", () => {
+      console.log("Mongoose disconnected from DB");
     });
   } catch (error) {
-    console.log(`Connecting DB failed ${error.toString()}`);
+    console.error(`Failed to connect to DB: ${error.toString()}`);
   }
 };
 
