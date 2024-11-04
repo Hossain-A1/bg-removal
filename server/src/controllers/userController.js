@@ -12,6 +12,8 @@ const clerkWebhooks = async (req, res, next) => {
       "svix-timestamp": req.headers["svix-timestamp"],
       "svix-signature": req.headers["svix-signature"],
     });
+    // Respond immediately to Clerk
+    res.status(200).json({ message: "Processing webhook event" });
 
     const { data, type } = req.body;
 
@@ -45,10 +47,13 @@ const clerkWebhooks = async (req, res, next) => {
         await userModel.findOneAndDelete({ clerkId: data.id });
         return successResponse(res, { message: "User deleted successfully" });
       }
+
+      default:
+        return res.status(200).send("Unhandled event type"); // Respond to unhandled events
     }
   } catch (error) {
     console.error("Webhook verification or processing error:", error);
-    return next(error); // Passes the error to the error handling middleware
+    next(error);
   }
 };
 
