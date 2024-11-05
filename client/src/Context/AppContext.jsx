@@ -10,7 +10,9 @@ const AppContextProvider = (props) => {
   const navigate = useNavigate();
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
-
+if(backendUrl){
+  console.log(backendUrl);
+}
   const { getToken } = useAuth();
   const { isSignedIn } = useUser();
   const { openSignIn } = useClerk();
@@ -42,10 +44,32 @@ const AppContextProvider = (props) => {
       setResultImage(false);
 
       navigate("/result");
-    } catch (error) {}
+
+      const token = await getToken();
+      const formData = new FormData();
+      image && formData.append("image", image);
+
+      const { data } = await axios.post(
+        backendUrl + "/api/image/remove-bg",
+        formData,
+        { headers: { token } }
+      );
+
+      if (data.success) {
+        setResultImage(data.payload.resultImage);
+        data.payload.creditBalance && setCredit(data.payload.creditBalance);
+      } else {
+        alert("Something went wrong");
+        if (data.payload.creditBalance === 0) {
+          navigate("/buy-credits");
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  const value = { setCredit, credit, backendUrl, loadCreditsData, removeBG };
+  const value = { setCredit, credit, backendUrl, loadCreditsData, removeBG,image,resultImage,setResultImage };
 
   return (
     <AppContext.Provider value={value}>{props.children}</AppContext.Provider>
