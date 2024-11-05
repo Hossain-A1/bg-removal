@@ -2,13 +2,11 @@ import { Webhook } from "svix";
 import userModel from "../models/userModel.js";
 import { clerk_webhook_secret } from "../secret.js";
 import { successResponse } from "./responseController.js";
-import connectDB from "../config/db.js";
 
 // Endpoint: api/user/webhooks
 const clerkWebhooks = async (req, res, next) => {
   try {
     const whook = new Webhook(clerk_webhook_secret);
-    console.log(clerk_webhook_secret);
     await whook.verify(JSON.stringify(req.body), {
       "svix-id": req.headers["svix-id"],
       "svix-timestamp": req.headers["svix-timestamp"],
@@ -18,8 +16,6 @@ const clerkWebhooks = async (req, res, next) => {
     res.status(200).json({ message: "Processing webhook event" });
 
     const { data, type } = req.body;
-
-    await connectDB();
 
     switch (type) {
       case "user.created": {
