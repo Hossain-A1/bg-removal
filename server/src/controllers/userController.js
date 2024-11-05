@@ -2,11 +2,13 @@ import { Webhook } from "svix";
 import userModel from "../models/userModel.js";
 import { clerk_webhook_secret } from "../secret.js";
 import { successResponse } from "./responseController.js";
+import connectDB from "../config/db.js";
 
 // Endpoint: api/user/webhooks
 const clerkWebhooks = async (req, res, next) => {
   try {
     const whook = new Webhook(clerk_webhook_secret);
+    console.log(clerk_webhook_secret);
     await whook.verify(JSON.stringify(req.body), {
       "svix-id": req.headers["svix-id"],
       "svix-timestamp": req.headers["svix-timestamp"],
@@ -17,6 +19,8 @@ const clerkWebhooks = async (req, res, next) => {
 
     const { data, type } = req.body;
 
+    await connectDB();
+
     switch (type) {
       case "user.created": {
         const userData = {
@@ -24,11 +28,14 @@ const clerkWebhooks = async (req, res, next) => {
           email: data.email_addresses[0]?.email_address,
           firstName: data.first_name,
           lastName: data.last_name,
-          photo: data.image_url,
+          photo: data.image_url || data.profile_image_url,
         };
 
         await userModel.create(userData);
-        return successResponse(res, {statusCode:201, message: "User created successfully" });
+        return successResponse(res, {
+          statusCode: 201,
+          message: "User created successfully",
+        });
       }
 
       case "user.updated": {
@@ -36,16 +43,22 @@ const clerkWebhooks = async (req, res, next) => {
           email: data.email_addresses[0]?.email_address,
           firstName: data.first_name,
           lastName: data.last_name,
-          photo: data.image_url,
+          photo: data.image_url || data.profile_image_url,
         };
 
         await userModel.findOneAndUpdate({ clerkId: data.id }, userData);
-        return successResponse(res, {statusCode:200, message: "User updated successfully" });
+        return successResponse(res, {
+          statusCode: 200,
+          message: "User updated successfully",
+        });
       }
 
       case "user.deleted": {
         await userModel.findOneAndDelete({ clerkId: data.id });
-        return successResponse(res, {statusCode:200, message: "User deleted successfully" });
+        return successResponse(res, {
+          statusCode: 200,
+          message: "User deleted successfully",
+        });
       }
 
       default:
