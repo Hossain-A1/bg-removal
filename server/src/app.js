@@ -1,7 +1,7 @@
 import "dotenv/config";
 import express from "express";
 import xssClean from "xss-clean";
-import rateLimit from "express-rate-limit";
+// import rateLimit from "express-rate-limit";
 import cors from "cors";
 import morgan from "morgan";
 import createHttpError from "http-errors";
@@ -13,18 +13,18 @@ const app = express();
 // Trust proxies (required for rate limiting to work correctly on Vercel)
 app.set("trust proxy", 1);
 
-const reqLimit = rateLimit({
-  windowMs: 1 * 60 * 1000,
-  max: 300,
-  message: "Too many requests from this API, please try again after 1 minute",
-  keyGenerator: (req) => req.ip,
-});
+// const reqLimit = rateLimit({
+//   windowMs: 1 * 60 * 1000,
+//   max: 300,
+//   message: "Too many requests from this API, please try again after 1 minute",
+//   keyGenerator: (req) => req.ip,
+// });
 
 // Middlewares
 app.use(express.json());
 app.use(cors({ credentials: true }));
 app.use(morgan("dev"));
-app.use(reqLimit);
+// app.use(reqLimit);
 app.use(xssClean());
 app.use(express.urlencoded({ extended: true }));
 

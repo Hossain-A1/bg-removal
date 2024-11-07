@@ -1,7 +1,11 @@
 import { Webhook } from "svix";
+import Stripe from "stripe";
 import userModel from "../models/userModel.js";
-import { clerk_webhook_secret } from "../secret.js";
+import { clerk_webhook_secret, stripeSecretKey } from "../secret.js";
 import { successResponse } from "./responseController.js";
+import paymentModel from "../models/paymentModel.js";
+
+const stripe = new Stripe(stripeSecretKey);
 
 // Endpoint: api/user/webhooks
 const clerkWebhooks = async (req, res, next) => {
@@ -70,7 +74,6 @@ const userCredits = async (req, res, next) => {
   try {
     const { clerkId } = req.body;
     const userData = await userModel.findOne({ clerkId });
-    console.log(userData);
 
     return successResponse(res, {
       statusCode: 200,
@@ -81,4 +84,88 @@ const userCredits = async (req, res, next) => {
     return next(error);
   }
 };
-export { clerkWebhooks, userCredits };
+
+const paymentStripe = async (req, res, next) => {
+  try {
+    const { clerkId, planId } = req.body;
+    const { origin } = req.headers;
+
+    const userData = await userModel.findOne({ clerkId });
+
+    if (!userData || !planId) {
+      throw new Error("Invalid credentials");
+    }
+
+    let credits, plan, amount, date;
+
+    // Determine plan details based on planId
+    switch (planId) {
+      case "Basic":
+        plan = "Basic";
+        credits = 100;
+        amount = 10;
+        break;
+      case "Advanced":
+        plan = "Advanced";
+        credits = 500;
+        amount = 30;
+        break;
+      case "Business":
+        plan = "Business";
+        credits = 500;
+        amount = 150;
+        break;
+      default:
+        throw new Error("Invalid planId provided");
+    }
+
+    date = Date.now();
+
+    // Creating transaction data
+    const transactionData = {
+      clerkId,
+      plan,
+      amount,
+      credits,
+      date,
+    };
+
+    const newTransaction = await paymentModel.create(transactionData);
+
+    const updatedCreditBalance =
+      (userData.creditBalance || 0) + newTransaction.credits;
+
+    await userModel.findByIdAndUpdate(userData._id, {
+      creditBalance: updatedCreditBalance,
+    });
+
+    // Set up line item details for Stripe
+    const line_items = [
+      {
+        price_data: {
+          currency: "USD",
+          product_data: {
+            name: planId,
+          },
+          unit_amount: amount * 100,
+        },
+        quantity: 1,
+      },
+    ];
+
+    // Create checkout session
+    const session = await stripe.checkout.sessions.create({
+      line_items,
+      mode: "payment",
+      success_url: `${origin}`,
+      cancel_url: `${origin}`,
+    });
+
+    res.json({ success: true, session_url: session.url });
+    return;
+  } catch (error) {
+    return next(error);
+  }
+};
+
+export { clerkWebhooks, userCredits, paymentStripe };
