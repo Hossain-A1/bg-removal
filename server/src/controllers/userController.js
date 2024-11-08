@@ -55,7 +55,7 @@ const clerkWebhooks = async (req, res, next) => {
 
       case "user.deleted": {
         await userModel.findOneAndDelete({ clerkId: data.id });
-        await paymentModel.findOneAndDelete({clerkId:data.id})
+        await paymentModel.findOneAndDelete({clerkId})
         return successResponse(res, {
           statusCode: 200,
           message: "User deleted successfullyy",
