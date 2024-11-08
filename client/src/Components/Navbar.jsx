@@ -6,12 +6,13 @@ import { AppContext } from "../Context/AppContext";
 
 const Navbar = () => {
   const { openSignIn } = useClerk();
-  const navigate = useNavigate();
   const { credit, loadCreditsData } = useContext(AppContext);
   const { isSignedIn, user } = useUser();
 
+  const navigate = useNavigate();
+
   useEffect(() => {
-    if (isSignedIn) {
+    if (isSignedIn && credit >= 0) {
       navigate("/", { replace: true });
       loadCreditsData();
     }
