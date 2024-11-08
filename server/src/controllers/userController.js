@@ -58,7 +58,7 @@ const clerkWebhooks = async (req, res, next) => {
         await userModel.findOneAndDelete({ clerkId: data.id });
         return successResponse(res, {
           statusCode: 200,
-          message: "User deleted successfully",
+          message: "User deleted successfullyy",
         });
       }
 
@@ -165,7 +165,7 @@ const paymentStripe = async (req, res, next) => {
       line_items,
       mode: "payment",
       success_url: `${origin}`,
-      cancel_url: `${origin}`,
+      cancel_url: `${origin}/cancel`,
     });
 
     res.json({ success: true, session_url: session.url });
