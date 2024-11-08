@@ -4,7 +4,6 @@ const paymentSchema = new Schema({
   clerkId: {
     type: String,
     required: true,
-    unique: true,
   },
   plan: {
     type: String,
@@ -27,6 +26,8 @@ const paymentSchema = new Schema({
     type: Number,
   },
 });
+
+paymentSchema.index({ clerkId: 1 }, { unique: false });
 
 const paymentModel = model("payment", paymentSchema);
 export default paymentModel;

@@ -1,10 +1,10 @@
-import 'dotenv/config'
+import "dotenv/config";
 import axios from "axios";
 import fs from "fs";
 import FormData from "form-data";
 import userModel from "../models/userModel.js";
-import { clipDrop_api } from "../secret.js";
 import { successResponse } from "./responseController.js";
+import paymentModel from "../models/paymentModel.js";
 
 const removeBgImage = async (req, res, next) => {
   try {
