@@ -7,18 +7,19 @@ import { AppContext } from "../Context/AppContext";
 const Navbar = () => {
   const { openSignIn } = useClerk();
   const navigate = useNavigate();
-  const { setCredit, credit, loadCreditsData } = useContext(AppContext);
+  const { credit, loadCreditsData } = useContext(AppContext);
   const { isSignedIn, user } = useUser();
 
-  //   useEffect(()=>{
-  // if(isSignedIn){
-  //   loadCreditsData()
-  // }
-  //   },[isSignedIn])
+  useEffect(() => {
+    if (isSignedIn) {
+      navigate("/", { replace: true });
+      loadCreditsData();
+    }
+  }, [isSignedIn]);
   return (
     <header className='flex items-center justify-between mx-4 py-3 lg:mx-44'>
       <Link to='/'>
-        <img className='w-32 sm:w-44' src={assets.logo} alt='logo' />
+        <img className='w-22 sm:w-44' src={assets.logo} alt='logo' />
       </Link>
 
       {isSignedIn ? (
@@ -29,7 +30,7 @@ const Navbar = () => {
           >
             <img className='w-5' src={assets.credit_icon} alt='credit icon' />
             <p className='text-xs sm:text-sm text-gray-600 font-medium'>
-              Credits: 5
+              Credits: {credit}
             </p>
           </button>
           <p className='text-gray-600 max-sm:hidden'>Hi, {user.fullName}</p>
@@ -38,7 +39,7 @@ const Navbar = () => {
       ) : (
         <button
           onClick={() => openSignIn({})}
-          className='bg-zinc-800 text-white flex items-center gap-4 px-4 py-2 sm:px-8 sm:py-3 text-sm rounded-full'
+          className='bg-zinc-800 text-white flex items-center gap-2 sm:gap-4 px-3 py-2 sm:px-8 sm:py-3 text-sm rounded-full'
         >
           Get started{" "}
           <img

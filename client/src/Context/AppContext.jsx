@@ -10,9 +10,7 @@ const AppContextProvider = (props) => {
   const navigate = useNavigate();
 
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
-if(backendUrl){
-  console.log(backendUrl);
-}
+
   const { getToken } = useAuth();
   const { isSignedIn } = useUser();
   const { openSignIn } = useClerk();
@@ -22,7 +20,7 @@ if(backendUrl){
       const token = await getToken();
 
       const { data } = await axios.get(backendUrl + "/api/user/credits", {
-        headers: { token },
+        headers: { token: token, "Content-Type": "multipart/form-data" },
       });
 
       if (data.success) {
@@ -37,12 +35,14 @@ if(backendUrl){
 
   const removeBG = async (image) => {
     try {
+      if (!image) {
+        throw new Error("No image file selected.");
+      }
       if (!isSignedIn) {
         return openSignIn();
       }
       setImage(image);
       setResultImage(false);
-
       navigate("/result");
 
       const token = await getToken();
@@ -52,7 +52,7 @@ if(backendUrl){
       const { data } = await axios.post(
         backendUrl + "/api/image/remove-bg",
         formData,
-        { headers: { token } }
+        { headers: { token, "Content-Type": "multipart/form-data" } }
       );
 
       if (data.success) {
@@ -65,11 +65,21 @@ if(backendUrl){
         }
       }
     } catch (error) {
-      console.log(error);
+      console.error("Error in removeBG:", error);
+      alert("Failed to remove background. Please try again.");
     }
   };
 
-  const value = { setCredit, credit, backendUrl, loadCreditsData, removeBG,image,resultImage,setResultImage };
+  const value = {
+    setCredit,
+    credit,
+    backendUrl,
+    loadCreditsData,
+    removeBG,
+    image,
+    resultImage,
+    setResultImage,
+  };
 
   return (
     <AppContext.Provider value={value}>{props.children}</AppContext.Provider>

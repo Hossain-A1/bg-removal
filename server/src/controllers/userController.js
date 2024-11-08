@@ -54,8 +54,7 @@ const clerkWebhooks = async (req, res, next) => {
       }
 
       case "user.deleted": {
-        await paymentModel.findOneAndDelete({ clerkId });
-
+        await paymentModel.findOneAndDelete({clerkId})
         await userModel.findOneAndDelete({ clerkId: data.id });
         return successResponse(res, {
           statusCode: 200,
@@ -77,10 +76,16 @@ const userCredits = async (req, res, next) => {
     const { clerkId } = req.body;
     const userData = await userModel.findOne({ clerkId });
 
+    if (!userData) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const credits = userData.creditBalance;
+
     return successResponse(res, {
       statusCode: 200,
       message: "user credits retuns successfylly",
-      payload: userData.creditBalance,
+      payload: credits,
     });
   } catch (error) {
     return next(error);
