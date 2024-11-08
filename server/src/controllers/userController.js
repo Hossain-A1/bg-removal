@@ -156,7 +156,7 @@ const paymentStripe = async (req, res, next) => {
           },
           unit_amount: amount * 100,
         },
-        quantity: credits,
+        quantity: 1,
       },
     ];
 
